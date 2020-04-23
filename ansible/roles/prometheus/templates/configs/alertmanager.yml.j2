@@ -1,0 +1,16 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: webhook
+  group_by: ['alertname', 'severity']
+  group_interval: 10m
+  repeat_interval: 1h
+
+receivers:
+- name: webhook
+  webhook_configs:
+  - send_resolved: true
+    url: "{{ alertmanager_webhook_url }}"
+
+templates: []

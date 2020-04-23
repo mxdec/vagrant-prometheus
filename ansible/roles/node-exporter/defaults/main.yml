@@ -1,0 +1,18 @@
+---
+
+# version
+node_exporter_version: 0.18.1
+
+# user
+node_exporter_user: prometheus
+node_exporter_group: prometheus
+
+# location
+node_exporter_dir: /usr/local/bin
+
+# listen address
+node_exporter_web_listen_address: "127.0.0.1:9100"
+
+# custom args
+node_exporter_args:
+- "--web.listen-address={{ node_exporter_web_listen_address }}"

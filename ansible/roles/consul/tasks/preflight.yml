@@ -1,0 +1,16 @@
+---
+
+- name: Ensure mandatory variable is set
+  fail:
+    msg: "{{ item.name }} is null"
+  when: item.result
+  loop:
+  - { name: "consul_datacenter",   result: "{{ consul_datacenter | length == 0 }}"}
+  - { name: "consul_bind_address", result: "{{ consul_bind_address | length == 0 }}"}
+
+- name: Ensure consul_bind_address is valid
+  fail:
+    msg: "consul_bind_address must be different than {{ item }}"
+  when: consul_bind_address == item
+  loop:
+  - "0.0.0.0"

@@ -1,0 +1,5 @@
+---
+# Upgrade OS package to their latest packages.
+# You may need to lock installed packages (apt-mark hold or PIN files).
+# Otherwise, their will be upgraded on next Ansible execution.
+upgrade_packages: true

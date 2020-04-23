@@ -1,0 +1,15 @@
+---
+
+- name: create /etc/docker directory
+  file:
+    name: /etc/docker
+    state: directory
+
+- name: copy /etc/docker/daemon.json
+  copy:
+    content: "{{ docker_daemon_config | to_nice_json }}"
+    dest: /etc/docker/daemon.json
+  notify:
+  - enable docker service
+
+- include: setup_ubuntu_bionic.yml

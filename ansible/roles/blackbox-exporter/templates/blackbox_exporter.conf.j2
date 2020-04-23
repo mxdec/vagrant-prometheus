@@ -1,0 +1,10 @@
+# Run blackbox_exporter
+
+respawn
+respawn limit 15 5
+
+start on startup
+
+script
+   {{ blackbox_exporter_bin }}/blackbox_exporter {{ blackbox_exporter_args | join(' ') }}
+end script

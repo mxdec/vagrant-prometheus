@@ -1,0 +1,10 @@
+---
+
+- name: Copy configuration file
+  copy:
+    dest: "{{ consul_config_dir }}/config.json"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    content: "{{ lookup('template', 'templates/config.json.j2') | to_nice_json }}"
+  notify:
+  - restart consul

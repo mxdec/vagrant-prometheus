@@ -1,0 +1,5 @@
+---
+
+# Go
+- src: https://github.com/jlund/ansible-go
+  version: master

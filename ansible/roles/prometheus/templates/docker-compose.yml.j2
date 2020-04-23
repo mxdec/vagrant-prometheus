@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.13.1
+    container_name: prometheus
+    restart: unless-stopped # only for docker-compose
+    network_mode: "host"
+    volumes:
+    - "/home/prometheus/data:/prometheus"
+    - "/home/prometheus/config:/etc/prometheus"
+    command:
+    - "--web.enable-lifecycle"
+    - "--web.enable-admin-api"
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    - "--storage.tsdb.path=/prometheus"
+    - "--web.console.libraries=/etc/prometheus/console_libraries"
+    - "--web.console.templates=/etc/prometheus/consoles"
+    - "--storage.tsdb.retention.time={{ prometheus_tsdb_retention }}"
+    - "--web.listen-address={{ prometheus_web_listen_address }}"
+  alertmanager:
+    image: prom/alertmanager:v0.18.0
+    container_name: alertmanager
+    restart: unless-stopped # only for docker-compose
+    network_mode: "host"
+    volumes:
+    - "/home/alertmanager/config:/etc/alertmanager"
+    - "/home/alertmanager/data:/alertmanager/data"
+    command:
+    - "--config.file=/etc/alertmanager/alertmanager.yml"
+    - "--storage.path=/alertmanager/data"
+    - "--web.listen-address={{ alertmanager_web_listen_address }}"

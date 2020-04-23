@@ -1,0 +1,36 @@
+---
+
+- name: Add Consul group
+  group:
+    name: "{{ consul_group }}"
+    state: present
+
+- name: Add Consul user
+  user:
+    name: "{{ consul_user }}"
+    comment: "Consul user"
+    group: "{{ consul_group }}"
+    system: true
+    shell: /usr/bin/nologin
+    create_home: no
+
+- name: Create config directories
+  file:
+    dest: "{{ item.dir }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+  - { dir: "{{ consul_config_dir }}",  mode: '700' }
+  - { dir: "{{ consul_configd_dir }}",  mode: '700' }
+  - { dir: "{{ consul_data_dir }}",    mode: '700' }
+
+- name: Create binary directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    mode: '755'
+  with_items:
+  - "{{ consul_bin_dir }}"

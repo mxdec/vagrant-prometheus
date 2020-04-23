@@ -1,0 +1,10 @@
+groups:
+- name: status
+  rules:
+  - alert: exporter_down
+    expr: up == 0
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: {% raw %} Exporter running on host {{ $labels.hostname }} down {% endraw %}

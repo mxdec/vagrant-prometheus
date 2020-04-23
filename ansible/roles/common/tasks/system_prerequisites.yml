@@ -1,0 +1,37 @@
+---
+
+# Default limits on mmap counts is too low for many products.
+# See https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+- name:
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+  - { name: vm.max_map_count, value: "262144" }
+  - { name: fs.file-max,      value: "2097152" }
+
+# Increase number of opened file descriptors
+# NB: The documentation mentions "group and wildcard limits are not applied to the root user."
+- name: Configure system settings, file descriptors and number of threads
+  pam_limits:
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  with_items:
+  - { domain: '*',    limit_type: '-', limit_item: 'nofile',  value: 262144 }
+  - { domain: '*',    limit_type: '-', limit_item: 'nproc',   value: 262144 }
+  - { domain: '*',    limit_type: '-', limit_item: 'memlock', value: unlimited }
+  - { domain: 'root', limit_type: '-', limit_item: 'nofile',  value: 262144 }
+
+- name: reload settings from all system configuration files
+  become: true
+  shell: sysctl --system
+
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PasswordAuthentication"
+              line="PasswordAuthentication no"
+              state=present
+  notify: Restart ssh

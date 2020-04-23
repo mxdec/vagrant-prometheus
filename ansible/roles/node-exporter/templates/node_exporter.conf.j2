@@ -1,0 +1,10 @@
+# Run node_exporter
+
+respawn
+respawn limit 15 5
+
+start on startup
+
+script
+   {{ node_exporter_dir }}/node_exporter {{ node_exporter_args | join(' ') }}
+end script

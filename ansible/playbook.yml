@@ -1,0 +1,26 @@
+---
+
+- hosts: '*'
+  become: yes
+  roles:
+  - common
+  - docker
+  - node-exporter
+  - consul
+
+- hosts: 'victoriametrics'
+  become: yes
+  roles:
+  - victoriametrics
+
+- hosts: 'prometheus'
+  become: yes
+  roles:
+  - blackbox-exporter
+  - prometheus
+
+- hosts: 'grafana'
+  become: yes
+  roles:
+  - docker
+  - grafana

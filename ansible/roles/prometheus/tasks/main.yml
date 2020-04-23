@@ -1,0 +1,63 @@
+---
+
+- name: Ensure {{ prometheus_group }} group
+  group:
+    name: "{{ prometheus_group }}"
+    system: yes
+    state: present
+
+- name: Ensure {{ prometheus_user }} user
+  user:
+    name: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    createhome: no
+
+- name: Ensure stack directories exists
+  file:
+    state: directory
+    path: "/home/{{ item.dest }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: '755'
+  with_items:
+  - { user: "{{ prometheus_user }}", group: "{{ prometheus_group }}", dest: "prometheus/stack" }
+  - { user: "{{ prometheus_user }}", group: "{{ prometheus_group }}", dest: "prometheus/config/file_sd" }
+  - { user: "{{ prometheus_user }}", group: "{{ prometheus_group }}", dest: "prometheus/config/rules" }
+  - { user: "{{ prometheus_user }}", group: "{{ prometheus_group }}", dest: "alertmanager/config" }
+  - { user: "nobody",                group: "nogroup",                dest: "prometheus/data" }
+  - { user: "nobody",                group: "nogroup",                dest: "alertmanager/data" }
+
+- name: Copy Prometheus config files
+  template:
+    src: "{{ item.src }}"
+    dest: "/home/prometheus/{{ item.dest }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '644'
+  with_items:
+  - { src: "configs/rules/alert.rules.j2",   dest: "config/rules/alert.rules" }
+  - { src: "configs/file_sd/targets.yml.j2", dest: "config/file_sd/targets.yml" }
+  - { src: "configs/prometheus.yml.j2",      dest: "config/prometheus.yml" }
+
+- name: Copy Alertmanager config file
+  template:
+    src: "{{ item.src }}"
+    dest: "/home/alertmanager/{{ item.dest }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '644'
+  with_items:
+  - { src: "configs/alertmanager.yml.j2", dest: "config/alertmanager.yml" }
+
+- name: Copy the prometheus stack file
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "/home/prometheus/stack/docker-compose.yml"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '644'
+
+- name: Setup prometheus stack
+  command: docker-compose -f "/home/prometheus/stack/docker-compose.yml" up -d --force-recreate

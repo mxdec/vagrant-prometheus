@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:{{ victoria_version }}
+    container_name: victoriametrics
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+    - "{{ victoria_storage_dir }}:/var/lib/victoriametrics"
+    command:
+    - "-retentionPeriod=1"
+    - "-storageDataPath=/var/lib/victoriametrics"
+    - "-httpListenAddr={{ victoria_listen_address }}"
+    - "-search.maxUniqueTimeseries={{ victoria_max_unique_timeseries }}"
+    - "-search.maxConcurrentRequests={{ victoria_max_concurrent_requests }}"
+    # The maximum number of concurrent search requests. It shouldn't exceed 2*vCPUs for better performance. See also -search.maxQueueDuration (default 8)

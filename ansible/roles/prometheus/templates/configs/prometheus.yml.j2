@@ -1,0 +1,64 @@
+global:
+  scrape_interval: 1m
+  scrape_timeout: 30s
+  evaluation_interval: 1m
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "{{ alertmanager_web_listen_address }}"
+
+remote_write:
+- url: {{ prometheus_remote_write_url }}
+  queue_config:
+    max_samples_per_send: 10000
+    max_shards: 30
+
+# rule_files:
+# - /etc/prometheus/rules/*.rules
+
+scrape_configs:
+
+- job_name: node_exporter
+  metrics_path: /metrics
+  consul_sd_configs:
+  - server: {{ consul_servers[0] }}:8500
+    datacenter: {{ consul_datacenter }}
+    allow_stale: true
+    refresh_interval: 5m
+    tags:
+    - prometheus
+  relabel_configs:
+  - source_labels: [__meta_consul_node]
+    target_label: hostname
+  metric_relabel_configs:
+  - source_labels: ['__name__']
+    regex: 'node_(.*)'
+    action: keep
+  - regex: 'job'
+    action: labeldrop
+  - regex: 'instance'
+    action: labeldrop
+
+- job_name: blackbox_exporter
+  metrics_path: /probe
+  params:
+    module:
+    - icmp
+  file_sd_configs:
+  - files:
+    - /etc/prometheus/file_sd/targets.yml
+  relabel_configs:
+  - source_labels: [__address__]
+    target_label: __param_target
+  - source_labels: [__param_target]
+    target_label: instance
+  - target_label: __address__
+    replacement: {{ blackbox_exporter_web_listen_address }}
+  metric_relabel_configs:
+  - regex: 'job'
+    action: labeldrop
+  - regex: 'instance'
+    action: labeldrop

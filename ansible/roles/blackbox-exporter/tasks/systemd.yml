@@ -1,0 +1,23 @@
+---
+
+- name: Copy the blackbox_exporter systemd service file
+  template:
+    src: blackbox_exporter.service.j2
+    dest: /etc/systemd/system/blackbox_exporter.service
+    owner: root
+    group: root
+    mode: '644'
+
+- name: Ensure Blackbox Exporter is enabled on boot
+  become: true
+  systemd:
+    daemon_reload: true
+    name: blackbox_exporter
+    enabled: true
+
+- name: restart blackbox_exporter
+  become: true
+  systemd:
+    daemon_reload: true
+    name: blackbox_exporter
+    state: restarted

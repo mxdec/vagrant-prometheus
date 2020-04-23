@@ -1,0 +1,17 @@
+---
+
+- name: Copy the node_exporter init.d / upstart service file
+  template:
+    src: node_exporter.conf.j2
+    dest: /etc/init/node_exporter.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart node_exporter service
+
+- name: Ensure node_exporter service is enabled and started
+  become: true
+  service:
+    name: node_exporter
+    state: started
+    enabled: true

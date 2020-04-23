@@ -1,0 +1,27 @@
+---
+
+- include: system_prerequisites.yml
+
+# Run the equivalent of "apt-get update" as a separate step
+- name: update package definitions
+  apt:
+    update_cache: yes
+
+- name: upgrade packages
+  apt:
+    upgrade: yes
+  when: upgrade_packages
+
+# Fix error on Scaleway instances:
+# https://askubuntu.com/questions/104160/method-driver-usr-lib-apt-methods-https-could-not-be-found-update-error
+- name: install apt-transport-https
+  become: yes
+  apt:
+    name: "apt-transport-https"
+    state: present
+
+- name: install base packages
+  become: yes
+  apt:
+    name: ['vim', 'htop', 'unzip', 'httpie', 'pass', 'tree']
+    state: present

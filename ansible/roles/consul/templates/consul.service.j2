@@ -1,0 +1,24 @@
+### BEGIN INIT INFO
+# Provides:          consul
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Consul agent
+# Description:       Consul service discovery framework
+### END INIT INFO
+
+[Unit]
+Description=Consul
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ consul_user }}
+Group={{ consul_group }}
+ExecStart={{ consul_bin_dir }}/consul agent {{ consul_args | join(' ') }}
+Restart=on-failure
+RestartSec=42
+
+[Install]
+WantedBy=multi-user.target

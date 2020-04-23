@@ -1,0 +1,59 @@
+---
+
+- name: Ensure {{ grafana_group }} group
+  group:
+    name: "{{ grafana_group }}"
+    system: yes
+    state: present
+
+- name: Ensure {{ grafana_user }} user
+  user:
+    name: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    createhome: no
+
+- name: Ensure Grafana directories exists
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    mode: '755'
+  with_items:
+  - "{{ grafana_path_dashboards }}"
+  - "{{ grafana_path_provisioning }}/datasources"
+  - "{{ grafana_path_provisioning }}/dashboards"
+  - "{{ grafana_path_provisioning }}/notifiers"
+
+- name: Copy Grafana Dashboards
+  copy:
+    src: "dashboards/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    mode: '644'
+  with_items:
+  - src: "node_exporter.json"
+    dest: "{{ grafana_path_dashboards }}/node_exporter.json"
+
+- name: Copy Grafana files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    mode: '644'
+  with_items:
+  - src: "docker-compose.yml.j2"
+    dest: "{{ grafana_path_conf }}/docker-compose.yml"
+  - src: "configs/grafana.ini.j2"  
+    dest: "{{ grafana_path_conf }}/grafana.ini"
+  - src: "provisioning/datasources/victoriametrics.yml.j2"
+    dest: "{{ grafana_path_provisioning }}/datasources/victoriametrics.yml"
+  - src: "provisioning/dashboards/VictoriaMetricsDashboards.yml.j2"
+    dest: "{{ grafana_path_provisioning }}/dashboards/VictoriaMetricsDashboards.yml"
+
+- name: Start Grafana
+  command: docker-compose -f "{{ grafana_path_conf }}/docker-compose.yml" up -d --force-recreate

@@ -1,0 +1,21 @@
+---
+
+# version
+victoria_version: v1.34.6
+
+# user
+victoria_user: victoria
+victoria_group: victoria
+
+# location
+victoria_storage_dir: "/var/lib/victoriametrics"
+victoria_config_dir: "/home/victoriametrics"
+
+# params
+victoria_max_concurrent_requests: 64
+victoria_max_unique_timeseries: 1000000
+
+# net
+victoria_listen_ip: "127.0.0.1"
+victoria_listen_port: "8428"
+victoria_listen_address: "{{ victoria_listen_ip }}:{{ victoria_listen_port }}"

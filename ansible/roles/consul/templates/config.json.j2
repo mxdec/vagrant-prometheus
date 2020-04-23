@@ -1,0 +1,43 @@
+{# This template will be passed through the 'to_nice_json' filter #}
+{# The filter fixes whitespace, indentation and comma's on the last item #}
+{
+    {# Common Settings #}
+
+    {## Node ##}
+    "node_name": "{{ consul_node_name }}",
+    "datacenter": "{{ consul_datacenter }}",
+    {% if consul_node_meta | length > 0 %}
+    "node_meta": {{ consul_node_meta | default({})| to_json }},
+    {% endif %}
+
+    {## Addresses ##}
+    "bind_addr": "{{ consul_bind_address }}",
+    "client_addr": "{{ consul_client_address }}",
+
+    {## Consul Connect ##}
+    "connect": {{ consul_connect | default({})| to_json }},
+
+    {## Ports Used ##}
+    "ports": {
+        "http": {{ consul_ports.http }},
+        "https": {{ consul_ports.https }},
+        "grpc": {{ consul_ports.grpc }},
+        "server": {{ consul_ports.server }}
+    },
+
+    {## Agent ##}
+    "data_dir": "{{ consul_data_dir }}",
+    "log_level": "{{ consul_log_level }}",
+
+    {## Encryption and TLS ##}
+    "encrypt": "{{ consul_raw_key }}",
+
+    {## Server/Client ##}
+    {% if ip in consul_servers %}
+    "server": true,
+    "ui": true,
+    "bootstrap": true
+    {% else %}
+    "retry_join": {{ consul_servers | list | to_json }}
+    {% endif %}
+}

@@ -1,0 +1,23 @@
+---
+
+- name: check role requirements
+  import_tasks: preflight.yml
+
+- name: Requirements consul
+  become: true
+  import_tasks: requirements.yml
+
+- name: Install consul
+  import_tasks: install.yml
+
+- name: Configure consul
+  become: true
+  import_tasks: config.yml
+
+- name: Install consul systemd deamon
+  import_tasks: systemd.yml
+  when: ansible_service_mgr == 'systemd'
+
+- name: Manage consul services
+  become: true
+  import_tasks: services.yml

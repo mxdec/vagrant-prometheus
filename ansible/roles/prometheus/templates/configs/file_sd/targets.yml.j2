@@ -1,0 +1,8 @@
+---
+
+{% for host in groups['all'] %}
+- targets:
+  - "{{ hostvars[host].ip }}"
+  labels:
+    hostname: "{{ hostvars[host].inventory_hostname }}"
+{% endfor %}

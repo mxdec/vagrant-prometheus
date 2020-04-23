@@ -1,0 +1,15 @@
+[Unit]
+Description=Blackbox Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User={{ blackbox_exporter_user }}
+Group={{ blackbox_exporter_group }}
+Type=simple
+ExecStart={{ blackbox_exporter_bin }}/blackbox_exporter {{ blackbox_exporter_args | join(' ') }}
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

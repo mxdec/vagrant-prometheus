@@ -1,0 +1,11 @@
+---
+
+docker_ubuntu_version: "5:18.09.6~3-0~ubuntu-bionic"
+docker_compose_version: "1.25.4"
+docker_daemon_config:
+  metrics-addr: "127.0.0.1:9323"
+  experimental: true
+  log-driver: "json-file"
+  log-opts:
+    max-size: "10m"
+    max-file: "2"

@@ -1,0 +1,10 @@
+---
+
+prometheus_group: prometheus
+prometheus_user: prometheus
+prometheus_tsdb_retention: 20d
+prometheus_web_listen_address: "127.0.0.1:9090"
+prometheus_remote_write_url: "http://127.0.0.1:8428/api/v1/write"
+alertmanager_web_listen_address: "127.0.0.1:9093"
+blackbox_exporter_web_listen_address: "127.0.0.1:9115"
+alertmanager_webhook_url: "http://127.0.0.1:8081"

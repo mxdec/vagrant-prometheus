@@ -1,0 +1,28 @@
+---
+
+- name: Ensure docker repo key is setup
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Ensure docker repo is setup
+  become: yes
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Ensure docker-ce is installed
+  become: yes
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  loop:
+    - docker-ce={{ docker_ubuntu_version }}
+    - python-docker
+    - python-requests
+
+- name: install docker-compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-{{ ansible_architecture }}"
+    dest: /usr/local/bin/docker-compose
+    mode: '755'

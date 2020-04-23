@@ -1,0 +1,46 @@
+---
+
+- name: Create blackbox_exporter config directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ blackbox_exporter_user }}"
+    group: "{{ blackbox_exporter_group }}"
+    mode: '755'
+  with_items:
+  - "{{ blackbox_exporter_bin }}"
+  - "{{ blackbox_exporter_etc }}"
+
+- name: Download and extract blackbox_exporter
+  become: false
+  check_mode: false
+  delegate_to: localhost
+  run_once: true
+  unarchive:
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter_version }}/blackbox_exporter-{{ blackbox_exporter_version }}.linux-{{ go_arch }}.tar.gz" # noqa 204
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Propagate blackbox_exporter binaries
+  copy:
+    src: "/tmp/blackbox_exporter-{{ blackbox_exporter_version }}.linux-{{ go_arch }}/blackbox_exporter"
+    dest: "{{ blackbox_exporter_bin }}/blackbox_exporter"
+    mode: '750'
+    owner: "{{ blackbox_exporter_user }}"
+    group: "{{ blackbox_exporter_group }}"
+
+- name: Copy blackbox_exporter config
+  copy:
+    src: blackbox.yml
+    dest: "{{ blackbox_exporter_etc }}/blackbox.yml"
+    mode: '644'
+    owner: "{{ blackbox_exporter_user }}"
+    group: "{{ blackbox_exporter_group }}"
+
+- name: Install blackbox_exporter systemd deamon
+  import_tasks: systemd.yml
+  when: ansible_service_mgr == 'systemd'
+
+- name: Install blackbox_exporter init - upstart deamon
+  import_tasks: service.yml
+  when: ansible_service_mgr == 'init' or ansible_service_mgr == 'upstart'

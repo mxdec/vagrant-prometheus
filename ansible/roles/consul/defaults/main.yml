@@ -1,0 +1,48 @@
+---
+
+# version
+consul_version: "1.7.1"
+
+# consul user group
+consul_user: "consul"
+consul_group: "consul"
+
+# consul directories
+consul_bin_dir: "/usr/local/bin"
+consul_config_dir: "/etc/consul"
+consul_configd_dir: "{{ consul_config_dir }}/consul.d"
+consul_data_dir: "/opt/consul"
+
+# consul settings
+consul_node_name: "{{ ansible_hostname }}"
+consul_datacenter: ''
+consul_raw_key: ''
+consul_node_meta: {}
+consul_connect:
+  enabled: false
+
+# consul addresses
+consul_bind_address: "127.0.0.1"
+consul_client_address: "127.0.0.1"
+
+# consul client mode
+consul_join: []
+
+# Consul ports
+consul_ports:
+  dns: -1
+  http: 8500
+  https: -1
+  grpc: -1
+  serf_lan: 8301
+  serf_wan: -1
+  server: 8300
+
+# Log level
+# https://www.consul.io/docs/agent/options.html#_log_level
+consul_log_level: "info"
+
+# custom args
+consul_args:
+- "-config-file={{ consul_config_dir }}/config.json"
+- "-config-dir={{ consul_configd_dir}}"

@@ -1,0 +1,44 @@
+---
+
+# user
+grafana_user: grafana
+grafana_group: grafana
+
+# paths
+grafana_path_conf: /etc/grafana
+grafana_path_provisioning: "{{ grafana_path_conf }}/provisioning"
+grafana_path_dashboards: "{{ grafana_path_conf }}/dashboards"
+
+# server
+server_protocol: http
+server_addr: 0.0.0.0
+server_http_port: 3000
+server_domain: grafana.localhost.com
+server_root_url: http://grafana.localhost.com
+
+# security
+security_admin_user: vaultme
+security_admin_password: vaultme
+security_secret_key: vaultme
+
+# auth
+auth_disable_login: false
+auth_main_org: Main Org.
+auth_proxy_enabled: false
+auth_basic_enabled: false
+auth_anon_enabled: false
+auth_anon_role: Viewer
+
+# smtp
+smtp_enabled: false
+smtp_host: '127.0.0.1:25'
+smtp_user: ""
+smtp_password: ""
+smtp_from_address: grafana@localhost.com
+
+# alerting
+alerting_enabled: false
+
+# custom args
+grafana_args:
+- "--config={{ grafana_path_conf }}/grafana.ini"

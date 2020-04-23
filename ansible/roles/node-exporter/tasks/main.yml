@@ -1,0 +1,47 @@
+---
+
+- name: Ensure {{ node_exporter_group }} group
+  group:
+    name: "{{ node_exporter_group }}"
+    system: yes
+    state: present
+
+- name: Ensure {{ node_exporter_user }} user
+  user:
+    name: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    createhome: no
+
+- name: Download and extract node_exporter
+  become: false
+  check_mode: false
+  delegate_to: localhost
+  run_once: true
+  unarchive:
+    src: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-{{ go_arch }}.tar.gz"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Create {{ node_exporter_dir }}
+  file:
+    path: "{{ node_exporter_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Propagate node_exporter binaries
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-{{ go_arch }}/node_exporter"
+    dest: "{{ node_exporter_dir }}/node_exporter"
+    mode: 0750
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+
+- name: Install node_exporter systemd deamon
+  import_tasks: systemd.yml
+  when: ansible_service_mgr == 'systemd'
+
+- name: Install node_exporter init - upstart deamon
+  import_tasks: service.yml
+  when: ansible_service_mgr == 'init' or ansible_service_mgr == 'upstart'

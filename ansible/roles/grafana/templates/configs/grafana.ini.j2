@@ -1,0 +1,60 @@
+app_mode = production
+
+[paths]
+provisioning = {{ grafana_path_provisioning }}
+
+[server]
+protocol = {{ server_protocol }}
+http_addr = {{ server_addr }}
+http_port = {{ server_http_port }}
+domain = {{ server_domain }}
+root_url = {{ server_root_url }}
+router_logging = true
+
+[analytics]
+reporting_enabled = false
+check_for_updates = false
+
+[security]
+admin_user = {{ security_admin_user }}
+admin_password = {{ security_admin_password }}
+secret_key = {{ security_secret_key }}
+disable_gravatar = true
+
+[snapshots]
+external_enabled = false
+
+[users]
+allow_sign_up = false
+allow_org_create = false
+login_hint = login
+password_hint= password
+default_theme = dark
+
+[auth]
+disable_login_form = {{ auth_disable_login }}
+
+[auth.anonymous]
+enabled = {{ auth_anon_enabled }}
+org_name = {{ auth_main_org }}
+org_role = {{ auth_anon_role }}
+
+[auth.proxy]
+enabled = {{ auth_proxy_enabled }}
+header_name = X-WEBAUTH-USER
+header_property = username
+auto_sign_up = false
+ldap_sync_ttl = 60
+
+[auth.basic]
+enabled = {{ auth_basic_enabled }}
+
+[smtp]
+enabled = {{ smtp_enabled }}
+host = {{ smtp_host }}
+user = {{ smtp_user }}
+password = {{ smtp_password }}
+from_address = {{ smtp_from_address }}
+
+[alerting]
+enabled = {{ alerting_enabled }}

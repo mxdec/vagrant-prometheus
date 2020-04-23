@@ -1,0 +1,19 @@
+---
+
+- name: Download and extract consul binary
+  become: false
+  check_mode: false
+  delegate_to: localhost
+  run_once: true
+  unarchive:
+    src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_{{ go_arch }}.zip"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Propagate consul binaries
+  copy:
+    src: "/tmp/consul"
+    dest: "{{ consul_bin_dir }}/consul"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: '755'
